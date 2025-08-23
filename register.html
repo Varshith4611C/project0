@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register | Grey Hat Experience</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card" role="main">
+    <img class="logo" src="VHlogo.png" alt="VH Logo" />
+    <h1>Sign Up</h1>
+
+    <form action="/register" method="post" autocomplete="on" novalidate>
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" required autocomplete="username" />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required autocomplete="new-password" />
+
+      <button type="submit">Register</button>
+
+      <p class="helper">Already have an account? <a href="/">Login</a></p>
+    </form>
+  </main>
+</body>
+</html>
