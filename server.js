@@ -64,7 +64,36 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// Serve signup HTML
+app.get("/register", (req, res) => {
+  res.sendFile(path.join(__dirname, "register.html"));
+});
+
+// Handle signup form POST
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.send("<h1>User already exists ❌</h1><p>Try a different username.</p>");
+    }
+
+    // Create new user
+    const newUser = new User({ username, password });
+    await newUser.save();
+
+    res.send("<h1>Signup successful 🎉</h1><p>You can now <a href='/'>login</a></p>");
+  } catch (err) {
+    console.error(err);
+    res.send("<h1>Server error ❌</h1>");
+  }
+});
+
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
