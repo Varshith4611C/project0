@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard | Grey Hat Experience</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<style>
+  .terminal {
+    background: #0a0a0a;
+    color: var(--green);
+    font-family: monospace;
+    padding: 16px;
+    border-radius: 12px;
+    height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 0 15px rgba(0,255,136,.25);
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  .button-group button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background: var(--green);
+    color: #0a0a0a;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .1s ease, filter .1s ease;
+  }
+  .button-group button:hover { filter: brightness(.9); transform: translateY(-1px); }
+  .button-group .logout { background: #ff4d4d; color:white; }
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>Welcome, Hacker 👾</h1>
+  <p>Grey Hat Experience Dashboard</p>
+
+  <div class="terminal" id="terminal"></div>
+
+  <div class="button-group">
+    <button onclick="alert('Profile clicked')">Profile</button>
+    <button onclick="alert('Settings clicked')">Settings</button>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</main>
+
+<script>
+const terminal = document.getElementById('terminal');
+const logs = [
+  "[SYSTEM] Initializing user session...",
+  "[ACCESS] Verifying credentials...",
+  "[SUCCESS] Login confirmed.",
+  "[INFO] Loading dashboard modules...",
+  "[INFO] Monitoring system...",
+  "[INFO] Grey Hat Experience ready."
+];
+
+let index = 0;
+function typeLogs() {
+  if (index < logs.length) {
+    const line = document.createElement('div');
+    line.textContent = logs[index];
+    terminal.appendChild(line);
+    terminal.scrollTop = terminal.scrollHeight;
+    index++;
+    setTimeout(typeLogs, 800);
+  }
+}
+
+typeLogs();
+
+function logout() {
+  window.location.href = '/'; // redirect to login
+}
+</script>
+</body>
+</html>
