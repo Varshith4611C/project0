@@ -20,7 +20,10 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 // User schema
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
-  password: { type: String, required: true } // In production, hash this
+  password: { type: String, required: true }, // In production, hash this
+  joinDate: { type: Date, default: Date.now },
+  lastLogin: { type: Date, default: Date.now },
+  achievements: { type: [String], default: ["First Login"] }
 });
 
 const User = mongoose.model("User", userSchema);
@@ -37,27 +40,14 @@ app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username, password });
     if (user) {
-      res.redirect("/dashboard.html");
+      // Update last login
+      user.lastLogin = new Date();
+      await user.save();
+      // Redirect to profile with user ID
+      res.redirect(`/profile/${user._id}`);
     } else {
       res.send("<h1>Login failed ❌</h1><p>Invalid username or password</p>");
     }
-  } catch (err) {
-    console.error(err);
-    res.send("<h1>Server error ❌</h1>");
-  }
-});
-
-// Optional signup route
-app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const existing = await User.findOne({ username });
-    if (existing) {
-      return res.send("<h1>User already exists ❌</h1>");
-    }
-    const newUser = new User({ username, password });
-    await newUser.save();
-    res.send("<h1>Signup successful 🎉</h1><p>You can now login</p>");
   } catch (err) {
     console.error(err);
     res.send("<h1>Server error ❌</h1>");
@@ -96,5 +86,3 @@ app.post("/register", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
-
-
