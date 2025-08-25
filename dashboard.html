@@ -54,14 +54,25 @@
 
 <script>
 
+// Parse query params
 const params = new URLSearchParams(window.location.search);
-const userData = {
-  username: params.get('username'),
-  joinDate: params.get('joinDate'),
-  lastLogin: params.get('lastLogin'),
-  achievements: params.get('achievements') ? params.get('achievements').split(',') : ['First Login']
-};
-localStorage.setItem('userData', JSON.stringify(userData));
+
+if(params.has('username')) {
+  const userData = {
+    username: params.get('username'),
+    joinDate: params.get('joinDate'),
+    lastLogin: params.get('lastLogin'),
+    achievements: params.get('achievements') ? params.get('achievements').split(',') : ['First Login']
+  };
+  // Save to localStorage so it's persistent across pages
+  localStorage.setItem('userData', JSON.stringify(userData));
+}
+
+// Retrieve from localStorage
+const user = JSON.parse(localStorage.getItem('userData'));
+
+// Display
+console.log(user.username, user.joinDate, user.lastLogin, user.achievements);
   
 const terminal = document.getElementById('terminal');
 const logs = [
@@ -93,5 +104,6 @@ function logout() {
 </script>
 </body>
 </html>
+
 
 
