@@ -53,6 +53,16 @@
 </main>
 
 <script>
+
+const params = new URLSearchParams(window.location.search);
+const userData = {
+  username: params.get('username'),
+  joinDate: params.get('joinDate'),
+  lastLogin: params.get('lastLogin'),
+  achievements: params.get('achievements') ? params.get('achievements').split(',') : ['First Login']
+};
+localStorage.setItem('userData', JSON.stringify(userData));
+  
 const terminal = document.getElementById('terminal');
 const logs = [
   "[SYSTEM] Initializing user session...",
@@ -83,4 +93,5 @@ function logout() {
 </script>
 </body>
 </html>
+
 
