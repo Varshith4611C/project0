@@ -37,7 +37,7 @@ app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username, password });
     if (user) {
-      res.send("<h1>Login successful 🎉</h1><p>Welcome back!</p>");
+      res.redirect("/dashboard.html");
     } else {
       res.send("<h1>Login failed ❌</h1><p>Invalid username or password</p>");
     }
@@ -96,4 +96,5 @@ app.post("/register", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
