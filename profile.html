@@ -75,11 +75,12 @@ function getQueryParam(name) {
   return params.get(name);
 }
 
-// Get user data from query params
-const username = getQueryParam('username') || 'UnknownUser';
-const joinDate = getQueryParam('joinDate') || 'Unknown';
-const lastLogin = getQueryParam('lastLogin') || 'Unknown';
-const achievements = (getQueryParam('achievements') || 'First Login').split(',');
+// Fetch user data from query params or localStorage
+let userData = JSON.parse(localStorage.getItem('userData')) || {};
+const username = userData.username || 'UnknownUser';
+const joinDate = userData.joinDate ? new Date(userData.joinDate).toLocaleDateString() : 'Unknown';
+const lastLogin = userData.lastLogin ? new Date(userData.lastLogin).toLocaleDateString() : 'Unknown';
+const achievements = userData.achievements || ['First Login'];
 
 // Combine all profile info into one block
 const profileSummary = `
@@ -134,3 +135,4 @@ function logout() {
 </script>
 </body>
 </html>
+
