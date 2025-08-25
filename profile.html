@@ -75,26 +75,40 @@ function getQueryParam(name) {
   return params.get(name);
 }
 
-// Fetch user data from query params or localStorage
-let userData = JSON.parse(localStorage.getItem('userData')) || {};
-const username = userData.username || 'UnknownUser';
-const joinDate = userData.joinDate ? new Date(userData.joinDate).toLocaleDateString() : 'Unknown';
-const lastLogin = userData.lastLogin ? new Date(userData.lastLogin).toLocaleDateString() : 'Unknown';
-const achievements = userData.achievements || ['First Login'];
+// Parse query params
+const params = new URLSearchParams(window.location.search);
+
+if(params.has('username')) {
+  const userData = {
+    username: params.get('username'),
+    joinDate: params.get('joinDate'),
+    lastLogin: params.get('lastLogin'),
+    achievements: params.get('achievements') ? params.get('achievements').split(',') : ['First Login']
+  };
+  // Save to localStorage so it's persistent across pages
+  localStorage.setItem('userData', JSON.stringify(userData));
+}
+
+// Retrieve from localStorage
+const user = JSON.parse(localStorage.getItem('userData'));
+
+// Display
+console.log(user.username, user.joinDate, user.lastLogin, user.achievements);
 
 // Combine all profile info into one block
 const profileSummary = `
 [SYSTEM] Fetching profile data...
 [ACCESS] User Profile Loaded
 ------------------------------
-Username: ${username}
-Member Since: ${joinDate}
-Last Login: ${lastLogin}
-Achievements: ${achievements.join(', ')}
+Username: ${user.username}
+Member Since: ${new Date(user.joinDate).toLocaleDateString()}
+Last Login: ${new Date(user.lastLogin).toLocaleDateString()}
+Achievements: ${user.achievements.join(', ')}
 ------------------------------
 [SECURITY] System scan complete
 [INFO] Ready.
 `;
+
 
 const log = document.getElementById('activity-log');
 let i = 0;
@@ -135,4 +149,3 @@ function logout() {
 </script>
 </body>
 </html>
-
