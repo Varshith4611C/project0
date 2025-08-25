@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profile | Grey Hat Experience</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<style>
+  .card {
+    max-width: 500px;
+    padding: 28px;
+    border-radius: 14px;
+    background: var(--muted);
+    border: 1px solid #0f2c22;
+    box-shadow: 0 8px 24px rgba(0,255,136,.25);
+    margin: 20px auto;
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  .terminal {
+    background: #0a0a0a;
+    color: var(--green);
+    font-family: monospace;
+    padding: 16px;
+    border-radius: 12px;
+    height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 0 12px rgba(0,255,136,.25);
+    white-space: pre-line;
+    margin-bottom: 20px;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  .button-group button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background: var(--green);
+    color: #0a0a0a;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .1s ease, filter .1s ease;
+  }
+  .button-group button:hover { filter: brightness(.9); transform: translateY(-1px); }
+  .button-group .logout { background: #ff4d4d; color:white; }
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>My Profile 👤</h1>
+
+  <div class="terminal" id="activity-log"></div>
+
+  <div class="button-group">
+    <button onclick="window.location.href='/dashboard.html'">Back to Dashboard</button>
+    <button onclick="window.location.href='/fun-pages.html'">Fun Pages 🎮</button>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</main>
+
+<script>
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+// Get user data from query params
+const username = getQueryParam('username') || 'UnknownUser';
+const joinDate = getQueryParam('joinDate') || 'Unknown';
+const lastLogin = getQueryParam('lastLogin') || 'Unknown';
+const achievements = (getQueryParam('achievements') || 'First Login').split(',');
+
+// Combine all profile info into one block
+const profileSummary = `
+[SYSTEM] Fetching profile data...
+[ACCESS] User Profile Loaded
+------------------------------
+Username: ${username}
+Member Since: ${joinDate}
+Last Login: ${lastLogin}
+Achievements: ${achievements.join(', ')}
+------------------------------
+[SECURITY] System scan complete
+[INFO] Ready.
+`;
+
+const log = document.getElementById('activity-log');
+let i = 0;
+
+// Type it line by line for hacker vibe
+const lines = profileSummary.trim().split('\n');
+
+function typeLogs() {
+  if(i < lines.length) {
+    const line = document.createElement('div');
+    line.textContent = lines[i];
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+    i++;
+    setTimeout(typeLogs, 500);
+  } else {
+    // Random live activity for immersive effect
+    setInterval(() => {
+      const line = document.createElement('div');
+      const codes = [
+        "[INFO] Monitoring system...",
+        "[SCAN] Firewall OK",
+        "[LOG] Session active",
+        "[INFO] No threats detected"
+      ];
+      line.textContent = codes[Math.floor(Math.random() * codes.length)];
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }, 2000);
+  }
+}
+
+typeLogs();
+
+function logout() {
+  window.location.href = '/';
+}
+</script>
+</body>
+</html>
