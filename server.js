@@ -44,7 +44,7 @@ app.post("/login", async (req, res) => {
       user.lastLogin = new Date();
       await user.save();
       // Redirect to profile with user ID
-      res.redirect(`/profile.html/${user._id}`);
+      res.redirect(`/profile.html?username=${encodeURIComponent(user.username)}&joinDate=${user.joinDate.toISOString().split('T')[0]}&lastLogin=${user.lastLogin.toISOString().split('T')[0]}&achievements=${encodeURIComponent(user.achievements.join(','))}`);
     } else {
       res.send("<h1>Login failed ❌</h1><p>Invalid username or password</p>");
     }
@@ -86,4 +86,5 @@ app.post("/register", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
