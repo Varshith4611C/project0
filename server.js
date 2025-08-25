@@ -54,14 +54,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// After successful login redirect
-localStorage.setItem('userData', JSON.stringify({
-  username: user.username,
-  joinDate: user.joinDate,
-  lastLogin: user.lastLogin,
-  achievements: user.achievements
-}));
-
 // Serve signup HTML
 app.get("/register", (req, res) => {
   res.sendFile(path.join(__dirname, "register.html"));
@@ -94,6 +86,7 @@ app.post("/register", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
 
