@@ -155,7 +155,7 @@ app.post("/login", async (req, res) => {
       user.lastLogin = new Date();
       await user.save();
       // Redirect to chat with user ID
-      res.redirect(`/chat.html?username=${encodeURIComponent(user.username)}`);
+      res.redirect(`/dashboard.html?username=${encodeURIComponent(user.username)}`);
 
     } else {
       res.send("<h1>Login failed ❌</h1><p>Invalid username or password</p>");
@@ -198,4 +198,5 @@ app.post("/register", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
