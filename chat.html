@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>VH Chat | Grey Hat Experience</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root{
+    --bg:#0b0b0b; --fg:#e6ffe6; --green:#00ff88; --muted:#1a1a1a;
+  }
+  * { box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+    display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;
+  }
+.chat-box {
+  height: 500px;          /* fixed starting height */
+  border-radius: 12px;    /* keep nice rounded corners */
+  padding: 14px;          /* a bit more padding for readability */
+  overflow-y: auto;
+  border: 1px solid #0f2c22;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+  .card{
+    height: 500px;
+    width:100%; max-width:580px; background:var(--muted);
+    border:1px solid #0f2c22; border-radius:14px; padding:28px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; flex-direction:column;
+  }
+  .logo{ width:72px; margin:0 auto 12px; filter: drop-shadow(0 0 3px rgba(0,255,136,.35)); display:block; }
+  h1{ margin:0 0 18px; text-align:center; font-size:20px; color:var(--green); letter-spacing:.5px; }
+  .chat-box{ background:#0b0b0b; border-radius:10px; padding:12px; height:360px; overflow-y:auto; border:1px solid #0f2c22; flex:1; display:flex; flex-direction:column; gap:6px; }
+  .msg{ max-width:78%; padding:10px 12px; border-radius:10px; word-wrap:break-word; white-space:pre-wrap; }
+  .msg.user{ margin-left:auto; background:var(--green); color:#051205; border-bottom-right-radius:2px; }
+  .msg.bot{ margin-right:auto; background:#101010; color:var(--fg); border-bottom-left-radius:2px; border:1px solid rgba(255,255,255,.03); }
+  .typing{ font-style:italic; color:#9feecf; opacity:.8; }
+  .input-area{ display:flex; gap:10px; margin-top:6px; }
+  .input-area input[type="text"]{ flex:1; padding:10px; border-radius:8px; border:1px solid #184e3b; background:#0e0e0e; color:var(--fg); }
+  .input-area button{ padding:10px 14px; border-radius:8px; border:0; background:var(--green); color:#050505; font-weight:700; cursor:pointer; }
+  .controls{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  select, label.toggle{ background:#0e0e0e; color:var(--fg); border:1px solid #184e3b; border-radius:8px; padding:6px 10px; font-size:13px; }
+  label.toggle{ display:flex; align-items:center; gap:6px; cursor:pointer; }
+  #resetBtn{ background:#ff5555; color:#0b0b0b; }
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="logo" src="VHlogo.png" alt="VH" />
+  <h1>VH AI Chat</h1>
+
+  <div class="controls">
+    <label>Model:
+      <select id="model">
+        <option value="gemini-1.5-flash-latest">Flash (fast)</option>
+        <option value="gemini-1.5-pro-latest">Pro (smarter)</option>
+      </select>
+    </label>
+    <label class="toggle">
+      <input type="checkbox" id="tts" /> 🔊 TTS
+    </label>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <div class="chat-box" id="chatBox">
+    <div class="msg bot">Welcome — AI is ready. Type something to start the convo.</div>
+  </div>
+
+  <div class="input-area">
+    <input id="msgIn" type="text" placeholder="Message..." />
+    <button id="sendBtn">Send</button>
+    <button id="micBtn">🎤</button>
+  </div>
+  <div style="color:#00ff88; font-size:13px; margin-bottom:6px;">
+  Logged in as: <strong id="userLabel"></strong>
+</div>
+</main>
+
+
+<script>
+const chatBox = document.getElementById("chatBox");
+const msgIn = document.getElementById("msgIn");
+const sendBtn = document.getElementById("sendBtn");
+const micBtn = document.getElementById("micBtn");
+const resetBtn = document.getElementById("resetBtn");
+const modelSel = document.getElementById("model");
+const ttsChk = document.getElementById("tts");
+
+function getQueryParam(name){
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+const username = getQueryParam('username') || 'guest';
+
+  // Set the label
+  document.getElementById('userLabel').textContent = username;
+
+function append(role, text){
+  const d = document.createElement("div");
+  d.className = "msg "+role;
+  d.textContent = text;
+  chatBox.appendChild(d);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return d;
+}
+
+function speak(text){
+  if(!ttsChk.checked) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+let typingEl = null;
+function showTyping(){
+  if(typingEl) return;
+  typingEl = document.createElement("div");
+  typingEl.className="msg bot typing";
+  typingEl.textContent="Assistant is typing...";
+  chatBox.appendChild(typingEl);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+function hideTyping(){ if(typingEl){ typingEl.remove(); typingEl=null; } }
+
+async function sendMessage(){
+  const text = msgIn.value.trim();
+  if(!text) return;
+  append("user", text);
+  msgIn.value="";
+  showTyping();
+  try{
+    const res = await fetch("/chat", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ message:text, model:modelSel.value, username: username })
+    });
+    const data = await res.json();
+    hideTyping();
+    if(res.ok && data.reply){
+      append("bot", data.reply);
+      speak(data.reply);
+    }else append("bot", `⚠️ ${data.error||"Server error"}`);
+  }catch(e){
+    hideTyping();
+    append("bot","⚠️ Network error.");
+  }
+}
+
+function startVoiceInput(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ append("bot","⚠️ Your browser doesn't support voice input."); return; }
+  const rec = new SR();
+  rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=1;
+  rec.start();
+  rec.onresult = (e)=>{ msgIn.value = e.results[0][0].transcript; sendMessage(); }
+  rec.onerror = ()=>append("bot","⚠️ Voice input error.");
+}
+
+sendBtn.addEventListener("click",sendMessage);
+msgIn.addEventListener("keydown",e=>{ if(e.key==="Enter") sendMessage(); });
+micBtn.addEventListener("click",startVoiceInput);
+resetBtn.addEventListener("click",async ()=>{
+  await fetch("/reset",{method:"POST"});
+  chatBox.innerHTML="";
+  append("bot","Memory wiped 🌱 — start fresh!");
+});
+</script>
+</body>
+</html>
