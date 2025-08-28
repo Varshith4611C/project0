@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Language & Region | Grey Hat Experience</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {background:#0a0a0a; color:var(--green); font-family:monospace; display:flex; justify-content:center; align-items:center; height:100vh;}
+    .card {background:#111; padding:30px; border-radius:12px; width:420px; box-shadow:0 0 15px rgba(0,255,136,.25);}
+    h1{text-align:center;margin-bottom:20px;}
+    label {display:block;margin:15px 0 5px;}
+    select {width:100%; padding:10px; border-radius:8px; background:#0a0a0a; color:var(--green);}
+    button {margin-top:20px; padding:12px; border:none; border-radius:10px; background:var(--green); color:#0a0a0a; font-weight:700; cursor:pointer;}
+    .back { background:#ff4d4d; color:white; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>🌐 Language & Region</h1>
+    <label for="lang">Language</label>
+    <select id="lang">
+      <option>English</option>
+      <option>Telugu</option>
+      <option>Hindi</option>
+      <option>Tamil</option>
+    </select>
+
+    <label for="region">Region</label>
+    <select id="region">
+      <option>India (IN)</option>
+      <option>USA (EN)</option>
+      <option>UK (EN)</option>
+    </select>
+
+    <div>
+      <button>Save</button>
+      <button class="back" onclick="window.location.href='settings.html'">Back</button>
+    </div>
+  </main>
+</body>
+</html>
