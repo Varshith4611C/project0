@@ -41,7 +41,7 @@ app.post("/chat", async (req, res) => {
   try {
     const username = (req.body.username || "").toString();
     const text = (req.body.message || "").toString();
-    const model = (req.body.model || "gemini-1.5-flash-latest").toString();
+    const model = (req.body.model || "gemini-2.5-flash").toString();
 
     if (!username || !text) return res.status(400).json({ error: "username and message required" });
 
@@ -63,7 +63,7 @@ app.post("/chat", async (req, res) => {
     // Build Gemini 'contents' array from convo.messages
     const contents = convo.messages.map(msg => {
       return {
-        role: msg.role === "user" ? "user" : "assistant",
+        role: msg.role === "user" ? "user" : "model",
         parts: [{ text: msg.text }]
       };
     });
@@ -198,5 +198,6 @@ app.post("/register", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
